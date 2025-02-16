@@ -1,7 +1,8 @@
 package constants
 
-type OutputKeyword string
 
 const (
-	OutputError OutputKeyword = "ERROR"
+	OutOk = "OK"
+	OutError = "ERROR"
+	OutNull = "null"
 )

@@ -1,8 +1,7 @@
 package constants
 
-type ErrorType string
-
 const (
-	ErrorInternal ErrorType = "internal server error"
-	ErrorMissingCommand ErrorType = "no command provided"
+	ErrorInternal = "internal server error"
+	ErrorMissingCommand = "no command provided"
+	ErrorMissingArguments = "no arguments provided"
 )

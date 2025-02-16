@@ -2,13 +2,17 @@ package server
 
 import (
 	"fmt"
-	"lsmith/go-store/internal/constants"
+	"lsmith/gostore/internal/constants"
 )
 
-func formatOutput(kwd constants.OutputKeyword, msg string) (output string) {
+func formatOutput(msg string) (output string) {
+	return fmt.Sprintf("%s\n", msg)
+}
+
+func formatOutputWithKeyword(kwd string, msg string) (output string) {
 	return fmt.Sprintf("%s %s\n", kwd, msg)
 }
 
 func formatError(msg string) (output string) {
-	return formatOutput(constants.OutputError, msg)
+	return formatOutputWithKeyword(constants.OutError, msg)
 }

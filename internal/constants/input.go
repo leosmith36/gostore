@@ -1,7 +1,7 @@
 package constants
 
-type InputKeyword string
-
 const (
-	InputSet InputKeyword = "SET"
+	InSet = "SET"
+	InGet = "GET"
+	InDel = "DEL"
 )

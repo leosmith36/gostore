@@ -2,7 +2,8 @@ package main
 
 import (
 	"log"
-	"lsmith/go-store/internal/server"
+	"lsmith/gostore/internal/server"
+	"lsmith/gostore/internal/store"
 	"net"
 )
 
@@ -11,6 +12,8 @@ func main() {
 		err error
 		ln net.Listener
 	)
+
+	st := store.NewStore()
 
 	if ln, err = net.Listen("tcp", ":8080"); err != nil {
 		log.Fatalf("failed to start listener: %v", err)
@@ -24,6 +27,6 @@ func main() {
 			log.Printf("failed to accept connection: %v", err)
 		}
 
-		go server.HandleConnection(conn)
+		go server.HandleConnection(conn, st)
 	}
 }
