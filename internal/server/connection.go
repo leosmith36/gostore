@@ -62,5 +62,5 @@ func executeCommand(input string, st *store.Store) (output string) {
 }
 
 func sendInternalError(conn net.Conn) {
-	conn.Write([]byte(formatError(string(constants.ErrInternal))))
+	conn.Write([]byte(formatError(constants.ErrInternal)))
 }

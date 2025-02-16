@@ -16,7 +16,7 @@ func main() {
 	var (
 		err error
 		ln net.Listener
-		wg = &sync.WaitGroup{}
+		wg = new(sync.WaitGroup)
 		st = store.NewStore()
 	)
 
