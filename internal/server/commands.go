@@ -3,30 +3,58 @@ package server
 import (
 	"fmt"
 	"lsmith/gostore/internal/constants"
-	"lsmith/gostore/internal/store"
+	"lsmith/gostore/internal/types"
+	"time"
 )
 
-func set(st *store.Store, args ...string) (output string) {
+func set(st types.StringCache, args ...string) (output string) {
   if len(args) < 1{
-    return formatError(constants.ErrorMissingArguments)
+    return formatError(constants.ErrMissingArguments)
   }
   if len(args) < 2 {
-    return formatError("missing value for SET command")
+    return formatError("missing value for SET")
   }
 
-  key := args[0]
+	key := args[0]
   value := args[1]
 
-  if err := st.Set(key, value); err != nil {
-    return formatError(err.Error())
-  }
+	var (
+		exp time.Time
+		err error
+	)
+
+	if len(args) > 2 {
+		for i := 2; i < len(args); i++ {
+			arg := args[i]
+			switch (arg) {
+			case constants.OptEx:
+				exp, err = parseExpiration(args[i+1:]...)
+				i++
+			default:
+				return formatError(fmt.Sprintf("unknown option: %s", arg))
+			}
+
+			if err != nil {
+				return formatError(err.Error())
+			}
+		}
+	}
+
+	if !exp.IsZero() {
+		if err = st.SetExpire(key, value, exp); err != nil {
+			return formatError(err.Error())
+		}
+	} else if err = st.Set(key, value); err != nil {
+		return formatError(err.Error())
+	}
+
 
   return formatOutput(constants.OutOk)
 }
 
-func get(st *store.Store, args ...string) (output string) {
+func get(st types.StringCache, args ...string) (output string) {
   if len(args) < 1 {
-    return formatError(constants.ErrorMissingArguments)
+    return formatError(constants.ErrMissingArguments)
   }
 
   key := args[0]
@@ -47,9 +75,9 @@ func get(st *store.Store, args ...string) (output string) {
 	return formatOutput(fmt.Sprintf(`"%s"`, value))
 }
 
-func del(st *store.Store, args ...string) (output string) {
+func del(st types.StringCache, args ...string) (output string) {
   if len(args) < 1 {
-    return formatError(constants.ErrorMissingArguments)
+    return formatError(constants.ErrMissingArguments)
   }
 
   key := args[0]

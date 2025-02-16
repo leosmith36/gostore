@@ -2,6 +2,7 @@ package server
 
 import (
 	"bufio"
+	"context"
 	"fmt"
 	"log"
 	"lsmith/gostore/internal/constants"
@@ -10,7 +11,7 @@ import (
 	"strings"
 )
 
-func HandleConnection(conn net.Conn, st *store.Store) {
+func HandleConnection(ctx context.Context, conn net.Conn, st *store.Store) {
 	var err error
 
 	defer conn.Close()
@@ -42,7 +43,7 @@ func executeCommand(input string, st *store.Store) (output string) {
 	split := strings.Split(input, " ")
 
 	if len(split) < 1 {
-		return formatError(constants.ErrorMissingCommand)
+		return formatError(constants.ErrMissingCommand)
 	}
 
 	cmd := split[0]
@@ -61,5 +62,5 @@ func executeCommand(input string, st *store.Store) (output string) {
 }
 
 func sendInternalError(conn net.Conn) {
-	conn.Write([]byte(formatError(string(constants.ErrorInternal))))
+	conn.Write([]byte(formatError(string(constants.ErrInternal))))
 }

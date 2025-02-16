@@ -1,15 +1,35 @@
 package store
 
-import "sync"
+import (
+	"context"
+	"sync"
+)
 
 type Store struct {
-	cache map[string]string
-	mu *sync.RWMutex
+	cache map[string]*cacheItem
+	mu sync.RWMutex
+	wg *sync.WaitGroup
+	ctx context.Context
+	cancel context.CancelFunc
 }
 
 func NewStore() (st *Store) {
+	ctx, cancel := context.WithCancel(context.Background())
+
 	return &Store{
-		cache: make(map[string]string),
-		mu: &sync.RWMutex{},
+		cache: make(map[string]*cacheItem),
+		wg: &sync.WaitGroup{},
+		ctx: ctx,
+		cancel: cancel,
 	}
+}
+
+func (s *Store) Start() {
+	s.wg.Add(1)
+	go s.vacuum()
+}
+
+func (s *Store) Stop() {
+	s.cancel()
+	s.wg.Wait()
 }

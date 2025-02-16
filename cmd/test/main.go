@@ -7,6 +7,7 @@ import (
 	"io"
 	"log"
 	"net"
+	"time"
 )
 
 func main() {
@@ -39,6 +40,8 @@ func main() {
 	// }
 
 	// log.Printf("received response: %s", res)
+
+	time.Sleep(1*time.Second)
 
 	if conn, err = net.Dial("tcp", ":8080"); err != nil {
 		log.Fatalf("failed to dial: %v", err)
