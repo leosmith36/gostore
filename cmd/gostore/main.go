@@ -53,7 +53,7 @@ func main() {
   log.Print("started application")
 
 	sigch := make(chan os.Signal, 1)
-	signal.Notify(sigch, syscall.SIGTERM, syscall.SIGINT)
+	signal.Notify(sigch, syscall.SIGHUP, syscall.SIGTERM, syscall.SIGINT)
 
 	<-sigch
 
