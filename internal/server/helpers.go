@@ -17,7 +17,7 @@ func formatOutputWithKeyword(kwd string, msg string) (output string) {
 }
 
 func formatError(msg string) (output string) {
-	return formatOutputWithKeyword(constants.OutError, msg)
+	return formatOutputWithKeyword(constants.OutputError, msg)
 }
 
 func parseExpiration(args ...string) (exp time.Time, err error) {

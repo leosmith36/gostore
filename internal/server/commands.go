@@ -9,7 +9,7 @@ import (
 
 func set(st types.StringCache, args ...string) (output string) {
   if len(args) < 1{
-    return formatError(constants.ErrMissingArguments)
+    return formatError(constants.ErrorMissingArguments)
   }
   if len(args) < 2 {
     return formatError("missing value for SET")
@@ -27,7 +27,7 @@ func set(st types.StringCache, args ...string) (output string) {
 		for i := 2; i < len(args); i++ {
 			arg := args[i]
 			switch (arg) {
-			case constants.OptEx:
+			case constants.OptionEx:
 				exp, err = parseExpiration(args[i+1:]...)
 				i++
 			default:
@@ -49,12 +49,12 @@ func set(st types.StringCache, args ...string) (output string) {
 	}
 
 
-  return formatOutput(constants.OutOk)
+  return formatOutput(constants.OutputOk)
 }
 
 func get(st types.StringCache, args ...string) (output string) {
   if len(args) < 1 {
-    return formatError(constants.ErrMissingArguments)
+    return formatError(constants.ErrorMissingArguments)
   }
 
   key := args[0]
@@ -69,7 +69,7 @@ func get(st types.StringCache, args ...string) (output string) {
   }
 
   if value == "" {
-		return formatOutput(constants.OutNull)
+		return formatOutput(constants.OutputNull)
 	}
 
 	return formatOutput(fmt.Sprintf(`"%s"`, value))
@@ -77,7 +77,7 @@ func get(st types.StringCache, args ...string) (output string) {
 
 func del(st types.StringCache, args ...string) (output string) {
   if len(args) < 1 {
-    return formatError(constants.ErrMissingArguments)
+    return formatError(constants.ErrorMissingArguments)
   }
 
   key := args[0]
@@ -86,5 +86,5 @@ func del(st types.StringCache, args ...string) (output string) {
     return formatError(err.Error())
   }
 
-	return formatOutput(constants.OutOk)
+	return formatOutput(constants.OutputOk)
 }

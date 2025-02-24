@@ -1,8 +1,8 @@
 package constants
 
 const (
-	InSet = "SET"
-	InGet = "GET"
-	InDel = "DEL"
-	InExpire = "EXPIRE"
+	InputSet = "SET"
+	InputGet = "GET"
+	InputDel = "DEL"
+	InputExpire = "EXPIRE"
 )

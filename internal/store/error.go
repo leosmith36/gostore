@@ -1,5 +1,5 @@
 package store
 
 const (
-	ErrInternal = "internal error"
+	ErrorInternal = "internal error"
 )

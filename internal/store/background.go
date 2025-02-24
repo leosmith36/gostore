@@ -6,6 +6,7 @@ func (s *Store) vacuum() {
 	defer s.wg.Done()
 
 	ticker := time.NewTicker(time.Second)
+	defer ticker.Stop()
 
 	for {
 		select {

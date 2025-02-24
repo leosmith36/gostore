@@ -33,7 +33,11 @@ func main() {
 		defer wg.Done()
 		
 		for {
-			var conn net.Conn
+			var (
+				err error
+				conn net.Conn
+			)
+
 			if conn, err = ln.Accept(); err != nil {
 				if ctx.Err() != nil {
 					return
@@ -57,12 +61,18 @@ func main() {
 
 	<-sigch
 
+	// cancel goroutines
 	cancel()
+
+	// close listener
 	ln.Close()
 
 	log.Print("shutting down application")
 
+	// wait for goroutines to stop
 	wg.Wait()
+
+	// stop store
 	st.Stop()
 
 	log.Print("application shut down gracefully")

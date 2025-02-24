@@ -2,7 +2,7 @@ package constants
 
 
 const (
-	OutOk = "OK"
-	OutError = "ERROR"
-	OutNull = "null"
+	OutputOk = "OK"
+	OutputError = "ERROR"
+	OutputNull = "null"
 )

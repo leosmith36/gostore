@@ -43,18 +43,18 @@ func executeCommand(input string, st *store.Store) (output string) {
 	split := strings.Split(input, " ")
 
 	if len(split) < 1 {
-		return formatError(constants.ErrMissingCommand)
+		return formatError(constants.ErrorMissingCommand)
 	}
 
 	cmd := split[0]
 	args := split[1:]
 
   switch (cmd) {
-	case constants.InSet:
+	case constants.InputSet:
 		return set(st, args...)
-	case constants.InGet:
+	case constants.InputGet:
 		return get(st, args...)
-	case constants.InDel:
+	case constants.InputDel:
 		return del(st, args...)
 	}
 
@@ -62,5 +62,5 @@ func executeCommand(input string, st *store.Store) (output string) {
 }
 
 func sendInternalError(conn net.Conn) {
-	conn.Write([]byte(formatError(constants.ErrInternal)))
+	conn.Write([]byte(formatError(constants.ErrorInternal)))
 }

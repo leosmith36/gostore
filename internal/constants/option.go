@@ -1,5 +1,5 @@
 package constants
 
 const (
-	OptEx = "EX"
+	OptionEx = "EX"
 )

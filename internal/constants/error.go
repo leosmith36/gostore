@@ -1,7 +1,7 @@
 package constants
 
 const (
-	ErrInternal = "internal server error"
-	ErrMissingCommand = "no command provided"
-	ErrMissingArguments = "no arguments provided"
+	ErrorInternal = "internal server error"
+	ErrorMissingCommand = "no command provided"
+	ErrorMissingArguments = "no arguments provided"
 )
