@@ -11,6 +11,16 @@ import (
 )
 
 func main() {
+	var (
+		err error
+		a   *args
+	)
+
+	if a, err = parseArgs(); err != nil {
+		fmt.Print(err.Error())
+		return
+	}
+
 	for {
 		var (
 			input string
@@ -30,7 +40,7 @@ func main() {
 			continue
 		}
 
-		if conn, err = net.Dial("tcp", ":8080"); err != nil {
+		if conn, err = net.Dial("tcp", fmt.Sprintf("%s:%d", a.host, a.port)); err != nil {
 			fmt.Printf("ERROR failed to reach server: %v\n", err)
 			continue
 		}

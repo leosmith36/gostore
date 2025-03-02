@@ -15,26 +15,26 @@ import (
 func main() {
 	var (
 		err error
-		ln net.Listener
-		wg = new(sync.WaitGroup)
-		st = store.NewStore()
+		ln  net.Listener
+		wg  = new(sync.WaitGroup)
+		st  = store.NewStore()
 	)
 
 	ctx, cancel := context.WithCancel(context.Background())
 
 	st.Start()
 
-	if ln, err = net.Listen("tcp", ":8080"); err != nil {
+	if ln, err = net.Listen("tcp", ":4535"); err != nil {
 		log.Fatalf("failed to start listener: %v", err)
 	}
 
 	wg.Add(1)
 	go func() {
 		defer wg.Done()
-		
+
 		for {
 			var (
-				err error
+				err  error
 				conn net.Conn
 			)
 
@@ -45,7 +45,7 @@ func main() {
 				log.Printf("failed to accept connection: %v", err)
 				continue
 			}
-	
+
 			wg.Add(1)
 			go func() {
 				defer wg.Done()
@@ -54,7 +54,7 @@ func main() {
 		}
 	}()
 
-  log.Print("started application")
+	log.Print("started application")
 
 	sigch := make(chan os.Signal, 1)
 	signal.Notify(sigch, syscall.SIGHUP, syscall.SIGTERM, syscall.SIGINT)
