@@ -12,8 +12,10 @@ import (
 
 func main() {
 	var (
-		err error
-		a   *args
+		err  error
+		a    *args
+		conn net.Conn
+		res  string
 	)
 
 	if a, err = parseArgs(); err != nil {
@@ -21,12 +23,28 @@ func main() {
 		return
 	}
 
+	if conn, err = net.Dial("tcp", fmt.Sprintf("%s:%d", a.host, a.port)); err != nil {
+		fmt.Printf("ERROR failed to reach server: %v\n", err)
+		return
+	}
+
+	fmt.Fprintf(conn, "%s\n", "PING")
+
+	if res, err = bufio.NewReader(conn).ReadString('\n'); err != nil && !errors.Is(err, io.EOF) {
+		fmt.Printf("ERROR failed to read response: %v\n", err)
+		return
+	}
+
+	if res != "PONG\n" {
+		fmt.Println(res)
+		fmt.Println("ERROR unexpected response from server")
+		return
+	}
+
 	for {
 		var (
 			input string
 			err   error
-			conn  net.Conn
-			res   string
 		)
 
 		fmt.Print("gostore> ")

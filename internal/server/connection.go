@@ -8,7 +8,6 @@ import (
 	"lsmith/gostore/internal/constants"
 	"lsmith/gostore/internal/store"
 	"net"
-	"strings"
 )
 
 func HandleConnection(ctx context.Context, conn net.Conn, st *store.Store) {
@@ -40,7 +39,7 @@ func HandleConnection(ctx context.Context, conn net.Conn, st *store.Store) {
 }
 
 func executeCommand(input string, st *store.Store) (output string) {
-	split := strings.Split(input, " ")
+	split := splitArgs(input)
 
 	if len(split) < 1 {
 		return formatError(constants.ErrorMissingCommand)
@@ -49,13 +48,15 @@ func executeCommand(input string, st *store.Store) (output string) {
 	cmd := split[0]
 	args := split[1:]
 
-  switch (cmd) {
+	switch cmd {
 	case constants.InputSet:
 		return set(st, args...)
 	case constants.InputGet:
 		return get(st, args...)
 	case constants.InputDel:
 		return del(st, args...)
+	case constants.InputPing:
+		return ping(args...)
 	}
 
 	return formatError(fmt.Sprintf("unknown command: %s", cmd))

@@ -8,15 +8,15 @@ import (
 )
 
 func set(st types.StringCache, args ...string) (output string) {
-  if len(args) < 1{
-    return formatError(constants.ErrorMissingArguments)
-  }
-  if len(args) < 2 {
-    return formatError("missing value for SET")
-  }
+	if len(args) < 1 {
+		return formatError(constants.ErrorMissingArguments)
+	}
+	if len(args) < 2 {
+		return formatError("missing value for SET")
+	}
 
 	key := args[0]
-  value := args[1]
+	value := args[1]
 
 	var (
 		exp time.Time
@@ -26,7 +26,7 @@ func set(st types.StringCache, args ...string) (output string) {
 	if len(args) > 2 {
 		for i := 2; i < len(args); i++ {
 			arg := args[i]
-			switch (arg) {
+			switch arg {
 			case constants.OptionEx:
 				exp, err = parseExpiration(args[i+1:]...)
 				i++
@@ -48,27 +48,26 @@ func set(st types.StringCache, args ...string) (output string) {
 		return formatError(err.Error())
 	}
 
-
-  return formatOutput(constants.OutputOk)
+	return formatOutput(constants.OutputOk)
 }
 
 func get(st types.StringCache, args ...string) (output string) {
-  if len(args) < 1 {
-    return formatError(constants.ErrorMissingArguments)
-  }
+	if len(args) < 1 {
+		return formatError(constants.ErrorMissingArguments)
+	}
 
-  key := args[0]
+	key := args[0]
 
 	var (
 		value string
-		err error
+		err   error
 	)
 
-  if value, err = st.Get(key); err != nil {
-    return formatError(err.Error())
-  }
+	if value, err = st.Get(key); err != nil {
+		return formatError(err.Error())
+	}
 
-  if value == "" {
+	if value == "" {
 		return formatOutput(constants.OutputNull)
 	}
 
@@ -76,15 +75,23 @@ func get(st types.StringCache, args ...string) (output string) {
 }
 
 func del(st types.StringCache, args ...string) (output string) {
-  if len(args) < 1 {
-    return formatError(constants.ErrorMissingArguments)
-  }
+	if len(args) < 1 {
+		return formatError(constants.ErrorMissingArguments)
+	}
 
-  key := args[0]
+	key := args[0]
 
-  if _, err := st.Del(key); err != nil {
-    return formatError(err.Error())
-  }
+	if _, err := st.Del(key); err != nil {
+		return formatError(err.Error())
+	}
 
 	return formatOutput(constants.OutputOk)
+}
+
+func ping(args ...string) (output string) {
+	if len(args) < 1 {
+		return formatOutput("PONG")
+	}
+
+	return formatOutput(fmt.Sprintf(`"%s"`, args[0]))
 }
