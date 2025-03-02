@@ -15,6 +15,7 @@ import (
 func main() {
 	var (
 		err error
+		lc  net.ListenConfig
 		ln  net.Listener
 		wg  = new(sync.WaitGroup)
 		st  = store.NewStore()
@@ -24,7 +25,7 @@ func main() {
 
 	st.Start()
 
-	if ln, err = net.Listen("tcp", ":4535"); err != nil {
+	if ln, err = lc.Listen(ctx, "tcp", ":4535"); err != nil {
 		log.Fatalf("failed to start listener: %v", err)
 	}
 

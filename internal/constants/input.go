@@ -6,4 +6,5 @@ const (
 	InputDel    = "DEL"
 	InputExpire = "EXPIRE"
 	InputPing   = "PING"
+	InputIncr   = "INCR"
 )

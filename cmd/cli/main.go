@@ -24,19 +24,18 @@ func main() {
 	}
 
 	if conn, err = net.Dial("tcp", fmt.Sprintf("%s:%d", a.host, a.port)); err != nil {
-		fmt.Printf("ERROR failed to reach server: %v\n", err)
+		fmt.Println("ERROR failed to reach server")
 		return
 	}
 
 	fmt.Fprintf(conn, "%s\n", "PING")
 
 	if res, err = bufio.NewReader(conn).ReadString('\n'); err != nil && !errors.Is(err, io.EOF) {
-		fmt.Printf("ERROR failed to read response: %v\n", err)
+		fmt.Println("ERROR failed to read response")
 		return
 	}
 
 	if res != "PONG\n" {
-		fmt.Println(res)
 		fmt.Println("ERROR unexpected response from server")
 		return
 	}
@@ -44,13 +43,14 @@ func main() {
 	for {
 		var (
 			input string
-			err   error
+			res   string
+			conn  net.Conn
 		)
 
 		fmt.Print("gostore> ")
 
 		if input, err = bufio.NewReader(os.Stdin).ReadString('\n'); err != nil {
-			fmt.Printf("ERROR failed to read input: %v\n", err)
+			fmt.Println("ERROR failed to read input")
 		}
 
 		input = strings.TrimSpace(input)
@@ -59,14 +59,14 @@ func main() {
 		}
 
 		if conn, err = net.Dial("tcp", fmt.Sprintf("%s:%d", a.host, a.port)); err != nil {
-			fmt.Printf("ERROR failed to reach server: %v\n", err)
+			fmt.Println("ERROR failed to reach server")
 			continue
 		}
 
 		fmt.Fprintf(conn, "%s\n", input)
 
 		if res, err = bufio.NewReader(conn).ReadString('\n'); err != nil && !errors.Is(err, io.EOF) {
-			fmt.Printf("ERROR failed to read response: %v\n", err)
+			fmt.Println("ERROR failed to read response")
 			continue
 		}
 

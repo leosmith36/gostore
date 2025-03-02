@@ -1,6 +1,8 @@
 package store
 
 import (
+	"fmt"
+	"strconv"
 	"time"
 )
 
@@ -47,49 +49,25 @@ func (s *Store) Del(key string) (succ bool, err error) {
 	return s.unsafeDel(key)
 }
 
-func (s *Store) unsafeSet(key, value string) (err error) {
-	s.cache[key] = &cacheItem{
-		value: value,
+func (s *Store) IncrBy(key string, count int) (value string, err error) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	if value, err = s.unsafeGet(key); err != nil {
+		return "", err
 	}
 
-	return nil
-}
-
-func (s *Store) unsafeGet(key string) (value string, err error) {
-	var (
-		item *cacheItem
-		ok bool
-	)
-
-	if item, ok = s.cache[key]; !ok {
-		return "", nil
+	var ivalue int
+	if value == "" {
+		ivalue = 0
+	} else if ivalue, err = strconv.Atoi(value); err != nil {
+		return "", ErrorNotAnInteger
 	}
 
-	return item.value, nil
-}
-
-
-func (s *Store) unsafeExpire(key string, exp time.Time) (succ bool, err error) {
-	var (
-		item *cacheItem
-		ok bool
-	)
-
-	if item, ok = s.cache[key]; !ok {
-		return false, nil
+	ivalue += count
+	if err = s.unsafeSet(key, fmt.Sprint(ivalue)); err != nil {
+		return "", err
 	}
 
-	item.expireAt = exp
-
-	return true, nil
-}
-
-func (s *Store) unsafeDel(key string) (succ bool, err error) {
-	if _, ok := s.cache[key]; !ok {
-		return false, nil
-	}
-
-	delete(s.cache, key)
-
-	return true, nil
+	return fmt.Sprint(ivalue), nil
 }

@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-func set(st types.StringCache, args ...string) (output string) {
+func set(st types.KeyValueStore, args ...string) (output string) {
 	if len(args) < 1 {
 		return formatError(constants.ErrorMissingArguments)
 	}
@@ -51,9 +51,12 @@ func set(st types.StringCache, args ...string) (output string) {
 	return formatOutput(constants.OutputOk)
 }
 
-func get(st types.StringCache, args ...string) (output string) {
+func get(st types.KeyValueStore, args ...string) (output string) {
 	if len(args) < 1 {
 		return formatError(constants.ErrorMissingArguments)
+	}
+	if len(args) > 1 {
+		return formatError("wrong number of arguments for GET")
 	}
 
 	key := args[0]
@@ -74,24 +77,60 @@ func get(st types.StringCache, args ...string) (output string) {
 	return formatOutput(fmt.Sprintf(`"%s"`, value))
 }
 
-func del(st types.StringCache, args ...string) (output string) {
+func del(st types.KeyValueStore, args ...string) (output string) {
 	if len(args) < 1 {
 		return formatError(constants.ErrorMissingArguments)
 	}
 
-	key := args[0]
+	var (
+		key    = args[0]
+		exists bool
+		res    int
+		err    error
+	)
 
-	if _, err := st.Del(key); err != nil {
+	if exists, err = st.Del(key); err != nil {
 		return formatError(err.Error())
 	}
 
-	return formatOutput(constants.OutputOk)
+	if exists {
+		res = 1
+	} else {
+		res = 0
+	}
+
+	return formatOutput(fmt.Sprint(res))
 }
 
 func ping(args ...string) (output string) {
 	if len(args) < 1 {
 		return formatOutput("PONG")
 	}
+	if len(args) > 1 {
+		return formatError("wrong number of arguments for PING")
+	}
 
 	return formatOutput(fmt.Sprintf(`"%s"`, args[0]))
+}
+
+func incr(st types.KeyValueStore, args ...string) (output string) {
+	if len(args) < 1 {
+		return formatError(constants.ErrorMissingArguments)
+	}
+	if len(args) > 1 {
+		return formatError("wrong number of arguments for INCR")
+	}
+
+	key := args[0]
+
+	var (
+		value string
+		err   error
+	)
+
+	if value, err = st.IncrBy(key, 1); err != nil {
+		return formatError(err.Error())
+	}
+
+	return formatOutput(value)
 }

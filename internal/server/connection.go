@@ -6,15 +6,17 @@ import (
 	"fmt"
 	"log"
 	"lsmith/gostore/internal/constants"
-	"lsmith/gostore/internal/store"
+	"lsmith/gostore/internal/types"
 	"net"
+	"time"
 )
 
-func HandleConnection(ctx context.Context, conn net.Conn, st *store.Store) {
+func HandleConnection(ctx context.Context, conn net.Conn, st types.KeyValueStore) {
 	var err error
 
 	defer conn.Close()
 
+	conn.SetReadDeadline(time.Now().Add(30 * time.Second))
 	s := bufio.NewScanner(conn)
 
 	s.Scan()
@@ -38,7 +40,7 @@ func HandleConnection(ctx context.Context, conn net.Conn, st *store.Store) {
 	}
 }
 
-func executeCommand(input string, st *store.Store) (output string) {
+func executeCommand(input string, st types.KeyValueStore) (output string) {
 	split := splitArgs(input)
 
 	if len(split) < 1 {
@@ -57,6 +59,8 @@ func executeCommand(input string, st *store.Store) (output string) {
 		return del(st, args...)
 	case constants.InputPing:
 		return ping(args...)
+	case constants.InputIncr:
+		return incr(st, args...)
 	}
 
 	return formatError(fmt.Sprintf("unknown command: %s", cmd))
