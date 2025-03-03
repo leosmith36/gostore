@@ -4,14 +4,14 @@ import (
 	"time"
 )
 
-func (s *Store) Set(key, value string) (err error) {
+func (s *Store[T]) Set(key string, value T) (err error) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
 	return s.unsafeSet(key, value)
 }
 
-func (s *Store) SetExpire(key, value string, exp time.Time) (err error) {
+func (s *Store[T]) SetExpire(key string, value T, exp time.Time) (err error) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
@@ -26,49 +26,49 @@ func (s *Store) SetExpire(key, value string, exp time.Time) (err error) {
 	return nil
 }
 
-func (s *Store) Expire(key string, exp time.Time) (succ bool, err error) {
+func (s *Store[T]) Expire(key string, exp time.Time) (succ bool, err error) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
 	return s.unsafeExpire(key, exp)
 }
 
-func (s *Store) Get(key string) (value string, err error) {
+func (s *Store[T]) Get(key string) (value T, err error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
 
 	return s.unsafeGet(key)
 }
 
-func (s *Store) Del(key string) (succ bool, err error) {
+func (s *Store[T]) Del(key string) (succ bool, err error) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
 	return s.unsafeDel(key)
 }
 
-func (s *Store) Incr(key string) (value string, err error) {
+func (s *Store[T]) Incr(key string) (value T, err error) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
 	return s.unsafeIncrBy(key, 1)
 }
 
-func (s *Store) Decr(key string) (value string, err error) {
+func (s *Store[T]) Decr(key string) (value T, err error) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
 	return s.unsafeIncrBy(key, -1)
 }
 
-func (s *Store) IncrBy(key string, count int) (value string, err error) {
+func (s *Store[T]) IncrBy(key string, count int) (value T, err error) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
 	return s.unsafeIncrBy(key, count)
 }
 
-func (s *Store) DecrBy(key string, count int) (value string, err error) {
+func (s *Store[T]) DecrBy(key string, count int) (value T, err error) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 

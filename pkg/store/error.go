@@ -5,5 +5,6 @@ import "fmt"
 type StoreError error
 
 var (
-	ErrorNotAnInteger StoreError = fmt.Errorf("value is not an integer")
+	ErrorNotAnInteger    StoreError = fmt.Errorf("value is not an integer")
+	ErrorInvalidArgument StoreError = fmt.Errorf("invalid argument")
 )

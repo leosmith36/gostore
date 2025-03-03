@@ -1,41 +1,39 @@
 package store
 
 import (
-	"fmt"
-	"strconv"
 	"time"
 )
 
-func (s *Store) unsafeSet(key, value string) (err error) {
-	s.cache[key] = &item{
+func (s *Store[T]) unsafeSet(key string, value T) (err error) {
+	s.cache[key] = &item[T]{
 		value: value,
 	}
 
 	return nil
 }
 
-func (s *Store) unsafeGet(key string) (value string, err error) {
+func (s *Store[T]) unsafeGet(key string) (value T, err error) {
 	var (
-		item *item
+		item *item[T]
 		ok   bool
 	)
 
 	if item, ok = s.cache[key]; !ok {
-		return "", nil
+		return *new(T), nil
 	}
 
 	if !item.expireAt.IsZero() && time.Now().After(item.expireAt) {
 		delete(s.cache, key)
 
-		return "", nil
+		return *new(T), nil
 	}
 
 	return item.value, nil
 }
 
-func (s *Store) unsafeExpire(key string, exp time.Time) (succ bool, err error) {
+func (s *Store[T]) unsafeExpire(key string, exp time.Time) (succ bool, err error) {
 	var (
-		item *item
+		item *item[T]
 		ok   bool
 	)
 
@@ -48,7 +46,7 @@ func (s *Store) unsafeExpire(key string, exp time.Time) (succ bool, err error) {
 	return true, nil
 }
 
-func (s *Store) unsafeDel(key string) (succ bool, err error) {
+func (s *Store[T]) unsafeDel(key string) (succ bool, err error) {
 	if _, ok := s.cache[key]; !ok {
 		return false, nil
 	}
@@ -58,22 +56,31 @@ func (s *Store) unsafeDel(key string) (succ bool, err error) {
 	return true, nil
 }
 
-func (s *Store) unsafeIncrBy(key string, count int) (value string, err error) {
+func (s *Store[T]) unsafeIncrBy(key string, count int) (value T, err error) {
+	zero := getZero(value)
+
 	if value, err = s.unsafeGet(key); err != nil {
-		return "", err
+		return zero, err
 	}
 
-	var ivalue int
-	if value == "" {
-		ivalue = 0
-	} else if ivalue, err = strconv.Atoi(value); err != nil {
-		return "", ErrorNotAnInteger
+	var (
+		addval Addable
+		ok     bool
+	)
+	if value != zero {
+		if addval, ok = any(value).(Addable); !ok {
+			return zero, ErrorInvalidArgument
+		}
 	}
 
-	ivalue += count
-	if err = s.unsafeSet(key, fmt.Sprint(ivalue)); err != nil {
-		return "", err
+	addval = addval.Add(count)
+	if value, ok = addval.(T); !ok {
+		return zero, ErrorInvalidArgument
 	}
 
-	return fmt.Sprint(ivalue), nil
+	if err = s.unsafeSet(key, value); err != nil {
+		return zero, err
+	}
+
+	return value, nil
 }

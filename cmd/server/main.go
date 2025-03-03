@@ -18,7 +18,7 @@ func main() {
 		lc  net.ListenConfig
 		ln  net.Listener
 		wg  = new(sync.WaitGroup)
-		st  = store.NewStore()
+		st  = store.NewStore[string]()
 	)
 
 	ctx, cancel := context.WithCancel(context.Background())
