@@ -2,7 +2,7 @@ package store
 
 import "time"
 
-type cacheItem struct {
-	value string
+type item struct {
+	value    string
 	expireAt time.Time
 }

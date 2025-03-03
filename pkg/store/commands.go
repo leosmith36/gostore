@@ -1,8 +1,6 @@
 package store
 
 import (
-	"fmt"
-	"strconv"
 	"time"
 )
 
@@ -49,25 +47,30 @@ func (s *Store) Del(key string) (succ bool, err error) {
 	return s.unsafeDel(key)
 }
 
+func (s *Store) Incr(key string) (value string, err error) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	return s.unsafeIncrBy(key, 1)
+}
+
+func (s *Store) Decr(key string) (value string, err error) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	return s.unsafeIncrBy(key, -1)
+}
+
 func (s *Store) IncrBy(key string, count int) (value string, err error) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
-	if value, err = s.unsafeGet(key); err != nil {
-		return "", err
-	}
+	return s.unsafeIncrBy(key, count)
+}
 
-	var ivalue int
-	if value == "" {
-		ivalue = 0
-	} else if ivalue, err = strconv.Atoi(value); err != nil {
-		return "", ErrorNotAnInteger
-	}
+func (s *Store) DecrBy(key string, count int) (value string, err error) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
 
-	ivalue += count
-	if err = s.unsafeSet(key, fmt.Sprint(ivalue)); err != nil {
-		return "", err
-	}
-
-	return fmt.Sprint(ivalue), nil
+	return s.unsafeIncrBy(key, -count)
 }

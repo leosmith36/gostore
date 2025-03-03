@@ -6,7 +6,7 @@ import (
 )
 
 type Store struct {
-	cache  map[string]*cacheItem
+	cache  map[string]*item
 	mu     sync.RWMutex
 	wg     *sync.WaitGroup
 	ctx    context.Context
@@ -17,7 +17,7 @@ func NewStore() (st *Store) {
 	ctx, cancel := context.WithCancel(context.Background())
 
 	return &Store{
-		cache:  make(map[string]*cacheItem),
+		cache:  make(map[string]*item),
 		wg:     &sync.WaitGroup{},
 		ctx:    ctx,
 		cancel: cancel,

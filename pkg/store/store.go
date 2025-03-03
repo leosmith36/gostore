@@ -1,9 +1,13 @@
 package store
 
-import "time"
+import (
+	"fmt"
+	"strconv"
+	"time"
+)
 
 func (s *Store) unsafeSet(key, value string) (err error) {
-	s.cache[key] = &cacheItem{
+	s.cache[key] = &item{
 		value: value,
 	}
 
@@ -12,7 +16,7 @@ func (s *Store) unsafeSet(key, value string) (err error) {
 
 func (s *Store) unsafeGet(key string) (value string, err error) {
 	var (
-		item *cacheItem
+		item *item
 		ok   bool
 	)
 
@@ -31,7 +35,7 @@ func (s *Store) unsafeGet(key string) (value string, err error) {
 
 func (s *Store) unsafeExpire(key string, exp time.Time) (succ bool, err error) {
 	var (
-		item *cacheItem
+		item *item
 		ok   bool
 	)
 
@@ -52,4 +56,24 @@ func (s *Store) unsafeDel(key string) (succ bool, err error) {
 	delete(s.cache, key)
 
 	return true, nil
+}
+
+func (s *Store) unsafeIncrBy(key string, count int) (value string, err error) {
+	if value, err = s.unsafeGet(key); err != nil {
+		return "", err
+	}
+
+	var ivalue int
+	if value == "" {
+		ivalue = 0
+	} else if ivalue, err = strconv.Atoi(value); err != nil {
+		return "", ErrorNotAnInteger
+	}
+
+	ivalue += count
+	if err = s.unsafeSet(key, fmt.Sprint(ivalue)); err != nil {
+		return "", err
+	}
+
+	return fmt.Sprint(ivalue), nil
 }

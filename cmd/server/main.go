@@ -4,7 +4,7 @@ import (
 	"context"
 	"log"
 	"lsmith/gostore/internal/server"
-	"lsmith/gostore/internal/store"
+	"lsmith/gostore/pkg/store"
 	"net"
 	"os"
 	"os/signal"
