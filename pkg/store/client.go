@@ -5,30 +5,30 @@ import (
 	"sync"
 )
 
-type Store[T comparable] struct {
-	cache  map[string]*item[T]
+type Store struct {
+	cache  map[string]*item
 	mu     sync.RWMutex
 	wg     *sync.WaitGroup
 	ctx    context.Context
 	cancel context.CancelFunc
 }
 
-func NewStore[T comparable]() (st *Store[T]) {
+func NewStore[T comparable]() (st *Store) {
 	ctx, cancel := context.WithCancel(context.Background())
 
-	return &Store[T]{
-		cache:  make(map[string]*item[T]),
+	return &Store{
+		cache:  make(map[string]*item),
 		wg:     &sync.WaitGroup{},
 		ctx:    ctx,
 		cancel: cancel,
 	}
 }
 
-func (s *Store[T]) Start() {
+func (s *Store) Start() {
 	// stub
 }
 
-func (s *Store[T]) Stop() {
+func (s *Store) Stop() {
 	s.cancel()
 	s.wg.Wait()
 }
