@@ -137,7 +137,7 @@ func incr(st types.KeyValueStore, decr bool, args ...string) (output string) {
 		return formatError(err.Error())
 	}
 
-	return formatOutput(value)
+	return formatOutput(fmt.Sprintf(`"%s"`, value))
 }
 
 func incrBy(st types.KeyValueStore, decr bool, args ...string) (output string) {
@@ -169,5 +169,5 @@ func incrBy(st types.KeyValueStore, decr bool, args ...string) (output string) {
 		return formatError(err.Error())
 	}
 
-	return formatOutput(value)
+	return formatOutput(fmt.Sprintf(`"%s"`, value))
 }

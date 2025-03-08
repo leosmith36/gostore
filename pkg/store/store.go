@@ -72,7 +72,8 @@ func (s *Store) unsafeIncrBy(key string, count int) (value string, err error) {
 	}
 
 	ival += count
-	if err = s.unsafeSet(key, fmt.Sprint(ival)); err != nil {
+	value = fmt.Sprint(ival)
+	if err = s.unsafeSet(key, value); err != nil {
 		return "", err
 	}
 
