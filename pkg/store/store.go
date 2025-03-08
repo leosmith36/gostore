@@ -2,6 +2,7 @@ package store
 
 import (
 	"fmt"
+	"lsmith/gostore/internal/constants"
 	"strconv"
 	"time"
 )
@@ -66,11 +67,11 @@ func (s *Store) unsafeIncrBy(key string, count int) (value string, err error) {
 	var ival int
 	if value != "" {
 		if ival, err = strconv.Atoi(value); err != nil {
-			return "", ErrorInvalidArgument
+			return "", fmt.Errorf(constants.ErrInvalidArguments)
 		}
 	}
 
-	ival++
+	ival += count
 	if err = s.unsafeSet(key, fmt.Sprint(ival)); err != nil {
 		return "", err
 	}

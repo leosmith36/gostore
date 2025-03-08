@@ -4,15 +4,13 @@ import (
 	"fmt"
 	"lsmith/gostore/internal/constants"
 	"lsmith/gostore/internal/types"
+	"strconv"
 	"time"
 )
 
 func set(st types.KeyValueStore, args ...string) (output string) {
-	if len(args) < 1 {
-		return formatError(constants.ErrorMissingArguments)
-	}
 	if len(args) < 2 {
-		return formatError("missing value for SET")
+		return formatError(constants.ErrorMissingArguments)
 	}
 
 	key := args[0]
@@ -56,7 +54,7 @@ func get(st types.KeyValueStore, args ...string) (output string) {
 		return formatError(constants.ErrorMissingArguments)
 	}
 	if len(args) > 1 {
-		return formatError("wrong number of arguments for GET")
+		return formatError(constants.ErrorTooManyArguments)
 	}
 
 	key := args[0]
@@ -107,18 +105,18 @@ func ping(args ...string) (output string) {
 		return formatOutput("PONG")
 	}
 	if len(args) > 1 {
-		return formatError("wrong number of arguments for PING")
+		return formatError(constants.ErrorTooManyArguments)
 	}
 
 	return formatOutput(fmt.Sprintf(`"%s"`, args[0]))
 }
 
-func incr(st types.KeyValueStore, args ...string) (output string) {
+func incr(st types.KeyValueStore, decr bool, args ...string) (output string) {
 	if len(args) < 1 {
 		return formatError(constants.ErrorMissingArguments)
 	}
 	if len(args) > 1 {
-		return formatError("wrong number of arguments for INCR")
+		return formatError(constants.ErrorTooManyArguments)
 	}
 
 	key := args[0]
@@ -126,9 +124,48 @@ func incr(st types.KeyValueStore, args ...string) (output string) {
 	var (
 		value string
 		err   error
+		count int
 	)
 
-	if value, err = st.IncrBy(key, 1); err != nil {
+	if decr {
+		count = -1
+	} else {
+		count = 1
+	}
+
+	if value, err = st.IncrBy(key, count); err != nil {
+		return formatError(err.Error())
+	}
+
+	return formatOutput(value)
+}
+
+func incrBy(st types.KeyValueStore, decr bool, args ...string) (output string) {
+	if len(args) < 2 {
+		return formatError(constants.ErrorMissingArguments)
+	}
+	if len(args) > 2 {
+		return formatError(constants.ErrorTooManyArguments)
+	}
+
+	key := args[0]
+	scount := args[1]
+
+	var (
+		value string
+		err   error
+		count int
+	)
+
+	if count, err = strconv.Atoi(scount); err != nil {
+		return formatError(constants.ErrInvalidArguments)
+	}
+
+	if decr {
+		count *= -1
+	}
+
+	if value, err = st.IncrBy(key, count); err != nil {
 		return formatError(err.Error())
 	}
 

@@ -60,7 +60,13 @@ func executeCommand(input string, st types.KeyValueStore) (output string) {
 	case constants.InputPing:
 		return ping(args...)
 	case constants.InputIncr:
-		return incr(st, args...)
+		return incr(st, false, args...)
+	case constants.InputDecr:
+		return incr(st, true, args...)
+	case constants.InputIncrBy:
+		return incrBy(st, false, args...)
+	case constants.InputDecrBy:
+		return incrBy(st, true, args...)
 	}
 
 	return formatError(fmt.Sprintf("unknown command: %s", cmd))
