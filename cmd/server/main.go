@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"lsmith/gostore/internal/server"
 	"lsmith/gostore/pkg/store"
@@ -17,15 +18,17 @@ func main() {
 		err error
 		lc  net.ListenConfig
 		ln  net.Listener
-		wg  = new(sync.WaitGroup)
-		st  = store.NewStore[string]()
+
+		c  = getEnvs()
+		wg = new(sync.WaitGroup)
+		st = store.NewStore[string]()
 	)
 
 	ctx, cancel := context.WithCancel(context.Background())
 
 	st.Start()
 
-	if ln, err = lc.Listen(ctx, "tcp", ":4535"); err != nil {
+	if ln, err = lc.Listen(ctx, "tcp", fmt.Sprintf("%s:%d", c.host, c.port)); err != nil {
 		log.Fatalf("failed to start listener: %v", err)
 	}
 
