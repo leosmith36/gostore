@@ -3,6 +3,10 @@ package store
 import "time"
 
 type item struct {
-	value    string
-	expireAt time.Time
+	key   string
+	value string
+
+	expireAt   time.Time
+	lastUsedAt time.Time
+	numUses    int
 }

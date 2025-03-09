@@ -8,9 +8,7 @@ import (
 )
 
 func (s *Store) unsafeSet(key string, value string) (err error) {
-	s.cache[key] = &item{
-		value: value,
-	}
+	s.cache[key] = newItem(key, value)
 
 	return nil
 }
@@ -30,6 +28,8 @@ func (s *Store) unsafeGet(key string) (value string, err error) {
 
 		return *new(string), nil
 	}
+
+	item.lastUsedAt = time.Now()
 
 	return item.value, nil
 }
